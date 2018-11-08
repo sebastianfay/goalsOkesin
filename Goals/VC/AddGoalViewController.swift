@@ -28,6 +28,7 @@ class AddGoalViewController: UIViewController {
             name: UIResponder.keyboardWillShowNotification,
             object: nil
         )
+        textView.becomeFirstResponder()
     }
     
     //MARK: Actions
@@ -36,12 +37,11 @@ class AddGoalViewController: UIViewController {
         let key = "UIKeyboardFrameEndUserInfoKey"
         guard let keyboardFrame = notification.userInfo?[key] as? NSValue else { return }
 
-        let keybaordHeight = keyboardFrame.cgRectValue.height
+        let keybaordHeight = keyboardFrame.cgRectValue.height - 10
 
-        goBottomConstraint.constant = keybaordHeight + goBottomConstraint.constant - 20
-        cancelBottomConstraint.constant = keybaordHeight + cancelBottomConstraint.constant - 20
+        goBottomConstraint.constant = keybaordHeight + goBottomConstraint.constant
+        cancelBottomConstraint.constant = keybaordHeight + cancelBottomConstraint.constant
         UIView.animate(withDuration: 0.3) {
-            self.addGoal.isHidden = false
             self.view.layoutIfNeeded()
         }
     }
@@ -51,6 +51,7 @@ class AddGoalViewController: UIViewController {
     
     @IBAction func cancelSubmitGoal(_ sender: UIButton) {
         dismiss(animated: true)
+        textView.resignFirstResponder()
     }
     
     /*
@@ -63,4 +64,16 @@ class AddGoalViewController: UIViewController {
     }
     */
 
+}
+
+extension AddGoalViewController: UITextViewDelegate {
+    func textViewDidChangeSelection(_ textView: UITextView) {
+        if addGoal.isHidden {
+            textView.text.removeAll()
+            self.addGoal.isHidden = false
+            UIView.animate(withDuration: 0.3) {
+                self.view.layoutIfNeeded()
+            }
+        }
+    }
 }
